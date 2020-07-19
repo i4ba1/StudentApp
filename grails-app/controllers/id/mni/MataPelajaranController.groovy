@@ -19,6 +19,8 @@ class  MataPelajaranController {
 
     /**
      * Save mapel to database
+     * @param mapel
+     * @return
      */
     @Transactional
     def save(MataPelajaran mapel) {
@@ -51,6 +53,11 @@ class  MataPelajaranController {
         respond(mataPelajaran:m)
     }
 
+    /**
+     * Update Mata Pelajaran
+     * @param mapel
+     * @return
+     */
     @Transactional
     def update(MataPelajaran mapel){
         if (mapel == null) {
@@ -88,7 +95,30 @@ class  MataPelajaranController {
         respond MataPelajaran.list()
     }
 
-    def delete = {}
+    /**
+     * Delete Mata Pelajaran
+     * @param mataPelajaran
+     * @return
+     */
+    @Transactional
+    def delete(MataPelajaran mataPelajaran) {
+        if (mataPelajaran == null) {
+            notFound()
+            return
+        }
+
+        mataPelajaran.delete flush:true
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.deleted.message',
+                        args: [message(code: 'Feedback.label', default: 'Feedback'),
+                               mataPelajaran.id])
+                redirect action:"index", method:"GET"
+            }
+            '*'{ render status: NO_CONTENT }
+        }
+    }
 
     protected void notFound() {
         request.withFormat {
